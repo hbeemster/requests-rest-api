@@ -10,6 +10,13 @@
 - [Installation](#installation)
 - [License](#license)
 
+## Introduction
+The `requests-rest-api` package is a thin wrapper around the `requests` library with functions to make REST API calls.
+
+## Examples
+TODO
+
+
 ## Installation
 
 ```console
