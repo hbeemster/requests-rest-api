@@ -1,5 +1,4 @@
-from requests.auth import HTTPBasicAuth
-from requests.auth import HTTPDigestAuth
+from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 
 
 def basic_auth(username: str, password: str) -> HTTPBasicAuth:
