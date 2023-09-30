@@ -1,14 +1,12 @@
 """Requests REST API module."""
 import json
 import logging
-from contextlib import suppress
-
-from requests import Session
-from typing import Dict, Union, Optional
+from typing import Dict, Optional, Union
 
 import requests
+from requests import Session
 
-from requests_rest_api.constants import RequestMethod, STATUS_CODES_PER_REQUEST_METHOD, expected_status_codes
+from requests_rest_api.constants import RequestMethod, expected_status_codes
 from requests_rest_api.errors import RequestError
 
 logger = logging.getLogger(__name__)
@@ -128,8 +126,6 @@ def _request(
 ) -> Union[bool, str, dict]:
     """submits http request"""
 
-
-
     # a bit ugly, we might need to create and clean up the session
     cleanup_session = False
     if session is None:
@@ -170,7 +166,7 @@ def _request(
     # check if status code returned is "expected", otherwise raise ``HTTPError``
     if response.status_code not in expected_status_codes(method, status_codes):
         raise RequestError(
-            f"Unexpected HTTP status code '{response.status_code}' returned with " f"reason '{response.reason}'"
+            f"Unexpected HTTP status code '{response.status_code}' returned with reason '{response.reason}'"
         )
 
     # for responses with no content, return True to indicate

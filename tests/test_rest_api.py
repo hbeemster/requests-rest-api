@@ -1,6 +1,7 @@
-from requests_rest_api.rest_api import get_request, post_request, put_request, delete_request, patch_request
 import pytest
 from requests import Session
+
+from requests_rest_api.rest_api import delete_request, get_request, patch_request, post_request, put_request
 
 
 # ------------------------------------------------------------------------
@@ -58,5 +59,3 @@ def test_patch_request():
 def test_delete_request():
     result = delete_request("https://reqres.in/api/users/2")
     assert result
-
-

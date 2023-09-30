@@ -1,7 +1,8 @@
-
 class HTTPError(Exception):
-    """ base exception used for this module """
+    """base exception used for this module"""
+
     pass
+
 
 # class ConfigurationError(HTTPError):
 #     """ exception raised when method configuration fails """
@@ -15,4 +16,5 @@ class HTTPError(Exception):
 
 class RequestError(HTTPError):
     """Error raised for all requests failures."""
+
     pass
