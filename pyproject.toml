@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "requests-rest-api"
 dynamic = ["version"]
-description = ''
+description = 'The requests-rest-api package contains functions to make REST API calls using the requests package.'
 readme = "README.md"
 requires-python = ">=3.7"
 license = "MIT"
