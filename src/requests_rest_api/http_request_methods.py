@@ -1,7 +1,6 @@
 from enum import Enum
-from typing import Optional
-
 from http import HTTPStatus
+from typing import Optional
 
 
 # supported request methods

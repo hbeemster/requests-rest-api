@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-from requests_rest_api.rest_api import get_request, post_request, put_request, patch_request, delete_request
 from requests_rest_api.auth import basic_auth, digest_auth
 from requests_rest_api.errors import RequestError
+from requests_rest_api.rest_api import get_request, post_request, put_request, patch_request, delete_request
 
 __all__ = [
     "get_request",
