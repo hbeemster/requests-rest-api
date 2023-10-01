@@ -1,4 +1,5 @@
 from enum import Enum
+from http import HTTPStatus
 from typing import Optional
 
 
@@ -14,12 +15,12 @@ class RequestMethod(str, Enum):
 
 # expected http status codes per method type
 STATUS_CODES_PER_REQUEST_METHOD = {
-    RequestMethod.GET: [200],
-    RequestMethod.HEAD: [200],
-    RequestMethod.POST: [200, 201, 204],
-    RequestMethod.PUT: [200, 202, 204],
-    RequestMethod.DELETE: [200, 202, 204],
-    RequestMethod.PATCH: [200, 204],
+    RequestMethod.GET: [HTTPStatus.OK],
+    RequestMethod.HEAD: [HTTPStatus.OK],
+    RequestMethod.POST: [HTTPStatus.OK, HTTPStatus.CREATED, HTTPStatus.NO_CONTENT],
+    RequestMethod.PUT: [HTTPStatus.OK, HTTPStatus.ACCEPTED, HTTPStatus.NO_CONTENT],
+    RequestMethod.DELETE: [HTTPStatus.OK, HTTPStatus.ACCEPTED, HTTPStatus.NO_CONTENT],
+    RequestMethod.PATCH: [HTTPStatus.OK, HTTPStatus.NO_CONTENT],
 }
 
 

@@ -1,7 +1,7 @@
 import pytest
 from requests import Session
 
-from requests_rest_api.rest_api import delete_request, get_request, patch_request, post_request, put_request
+from requests_rest_api import delete_request, get_request, patch_request, post_request, put_request
 
 
 # ------------------------------------------------------------------------
@@ -22,7 +22,7 @@ def test_get_request(url, params):
 
 # ------------------------------------------------------------------------
 def test_get_request_without_session():
-    result = get_request("https://reqres.in/api/users/2")
+    result = get_request("https://reqres.in/api/users/2", status_codes=[200])
     assert result
 
 
