@@ -24,7 +24,9 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = ["requests"]
+dependencies = [
+  "requests==2.27.1",
+]
 
 [project.urls]
 Documentation = "https://github.com/hbeemster/requests-rest-api#readme"
