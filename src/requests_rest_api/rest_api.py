@@ -6,7 +6,7 @@ from typing import Dict, Optional, Union
 import requests
 from requests import Session
 
-from requests_rest_api.constants import RequestMethod, expected_status_codes
+from requests_rest_api.http_request_methods import RequestMethod, expected_status_codes
 from requests_rest_api.errors import RequestError
 
 logger = logging.getLogger(__name__)
