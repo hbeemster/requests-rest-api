@@ -112,8 +112,6 @@ def delete_request(
 # ------------------------------------------------------------------------
 # protected functions
 # ------------------------------------------------------------------------
-
-
 def _request(
     *,
     http_verb: HTTPVerb,
@@ -126,12 +124,50 @@ def _request(
 ) -> Union[bool, str, dict]:
     """submits http request"""
 
-    # a bit ugly, we might need to create and clean up the session
-    cleanup_session = False
-    if session is None:
-        session = Session()
-        cleanup_session = True
+    if session:
+        response = _send_request(http_verb=http_verb, url=url, session=session, params=params, data=data, **kwargs)
+    else:
+        with Session() as session:
+            response = _send_request(http_verb=http_verb, url=url, session=session, params=params, data=data, **kwargs)
 
+    # check if status code returned is "expected", otherwise raise ``HTTPError``
+    if response.status_code not in expected_status_codes(
+        http_verb, status_codes
+    ):
+        raise RequestError(
+            f"Unexpected HTTP status code '{response.status_code}' returned with reason '{response.reason}'"
+        )
+
+    # for responses with no content, return True to indicate
+    # that the request was successful
+    if not response.content:
+        return True
+
+    # Test if we did get a JSON response
+    if 'application/json' not in response.headers.get('Content-Type', ''):
+        raise RequestError(
+            f"The response was not valid JSON: '{response.text}'"
+        )
+
+    try:
+        return response.json()
+    except json.JSONDecodeError as e:
+        raise RequestError(
+            f"The response was not valid JSON: '{response.text}', error '{e}'"
+        ) from e
+
+
+# ------------------------------------------------------------------------
+def _send_request(
+    *,
+    http_verb: HTTPVerb,
+    url: str,
+    session: Session,
+    params: Optional[dict] = None,
+    data: Optional[dict] = None,
+    **kwargs,
+):
+    """"""
     response = None
     try:
         if http_verb == HTTPVerb.GET:
@@ -159,23 +195,5 @@ def _request(
             msg = f"{msg} - status_code: {response.status_code}"
         msg = f"{msg} - error: {e}"
         raise RequestError(msg) from e
-    finally:
-        if cleanup_session:
-            session.close()
 
-    # check if status code returned is "expected", otherwise raise ``HTTPError``
-    if response.status_code not in expected_status_codes(http_verb, status_codes):
-        raise RequestError(
-            f"Unexpected HTTP status code '{response.status_code}' returned with reason '{response.reason}'"
-        )
-
-    # for responses with no content, return True to indicate
-    # that the request was successful
-    if not response.content:
-        return True
-
-    # TODO: Need to test this further
-    try:
-        return response.json()
-    except json.JSONDecodeError:
-        return response.text
+    return response
