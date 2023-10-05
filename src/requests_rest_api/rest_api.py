@@ -7,7 +7,7 @@ import requests
 from requests import Session
 
 from requests_rest_api.errors import RequestError
-from requests_rest_api.http_request_methods import RequestMethod, expected_status_codes
+from requests_rest_api.http_request_constants import HTTPVerb, expected_status_codes
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ def get_request(
 ) -> Union[Dict, None]:
     """"""
     return _request(
-        method=RequestMethod.GET,
+        http_verb=HTTPVerb.GET,
         url=url,
         params=params,
         status_codes=status_codes,
@@ -43,7 +43,7 @@ def post_request(
 ) -> Union[Dict, None]:
     """"""
     return _request(
-        method=RequestMethod.POST,
+        http_verb=HTTPVerb.POST,
         url=url,
         data=data,
         status_codes=status_codes,
@@ -63,7 +63,7 @@ def put_request(
 ) -> Union[Dict, None]:
     """"""
     return _request(
-        method=RequestMethod.PUT,
+        http_verb=HTTPVerb.PUT,
         url=url,
         data=data,
         status_codes=status_codes,
@@ -83,7 +83,7 @@ def patch_request(
 ) -> Union[Dict, None]:
     """"""
     return _request(
-        method=RequestMethod.PATCH,
+        http_verb=HTTPVerb.PATCH,
         url=url,
         data=data,
         status_codes=status_codes,
@@ -101,7 +101,7 @@ def delete_request(
     **kwargs,
 ) -> Union[bool, None]:
     return _request(
-        method=RequestMethod.DELETE,
+        http_verb=HTTPVerb.DELETE,
         url=url,
         status_codes=status_codes,
         session=session,
@@ -116,7 +116,7 @@ def delete_request(
 
 def _request(
     *,
-    method: RequestMethod,
+    http_verb: HTTPVerb,
     url: str,
     params: Optional[dict] = None,
     data: Optional[dict] = None,
@@ -134,17 +134,17 @@ def _request(
 
     response = None
     try:
-        if method == RequestMethod.GET:
+        if http_verb == HTTPVerb.GET:
             response = session.get(url, params=params, **kwargs)
-        elif method == RequestMethod.HEAD:
+        elif http_verb == HTTPVerb.HEAD:
             response = session.head(url, **kwargs)
-        elif method == RequestMethod.POST:
+        elif http_verb == HTTPVerb.POST:
             response = session.post(url, data=data, **kwargs)
-        elif method == RequestMethod.PUT:
+        elif http_verb == HTTPVerb.PUT:
             response = session.put(url, data=data, **kwargs)
-        elif method == RequestMethod.DELETE:
+        elif http_verb == HTTPVerb.DELETE:
             response = session.delete(url, **kwargs)
-        elif method == RequestMethod.PATCH:
+        elif http_verb == HTTPVerb.PATCH:
             response = session.patch(url, data=data, **kwargs)
         # raise exception for error codes 4xx or 5xx
         response.raise_for_status()
@@ -154,7 +154,7 @@ def _request(
         requests.Timeout,
         requests.exceptions.RequestException,
     ) as e:
-        msg = f"Failed to execute the {method} request."
+        msg = f"Failed to execute the '{http_verb}' request."
         if response:
             msg = f"{msg} - status_code: {response.status_code}"
         msg = f"{msg} - error: {e}"
@@ -164,7 +164,7 @@ def _request(
             session.close()
 
     # check if status code returned is "expected", otherwise raise ``HTTPError``
-    if response.status_code not in expected_status_codes(method, status_codes):
+    if response.status_code not in expected_status_codes(http_verb, status_codes):
         raise RequestError(
             f"Unexpected HTTP status code '{response.status_code}' returned with reason '{response.reason}'"
         )
