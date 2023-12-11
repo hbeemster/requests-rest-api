@@ -100,13 +100,17 @@ def delete_request(
     session: Optional[Session] = None,
     **kwargs,
 ) -> Union[bool, None]:
-    return _request(
-        http_verb=HTTPVerb.DELETE,
-        url=url,
-        status_codes=status_codes,
-        session=session,
-        **kwargs,
-    )
+    try:
+        _request(
+            http_verb=HTTPVerb.DELETE,
+            url=url,
+            status_codes=status_codes,
+            session=session,
+            **kwargs,
+        )
+        return True
+    except RequestError:
+        return None
 
 
 # ------------------------------------------------------------------------
@@ -121,40 +125,53 @@ def _request(
     status_codes: Optional[list] = None,
     session: Optional[Session] = None,
     **kwargs,
-) -> Union[bool, str, dict]:
-    """submits http request"""
+) -> Union[Dict, None]:
+    """
+    Requests REST API module.
 
-    if session:
+    This module provides functions for making HTTP requests using different HTTP verbs.
+
+    Args:
+        http_verb: HTTPVerb,
+        url: The URL to send the request to.
+        params: The query parameters to include in the request URL. Default is None.
+        status_codes: The list of expected status codes. Default is None.
+        session: The requests Session object to use for the request. Default is None.
+        **kwargs: Additional keyword arguments to pass to the underlying requests function.
+
+    Returns:
+        Union[Dict, None]: The response data as a dictionary, or None if the response has no content.
+
+    Raises:
+        RequestError: If the response status code is not in the expected status codes.
+        RequestError: If the response is not a valid JSON.
+        RequestError: If the response is not a valid JSON and raises a JSONDecodeError.
+
+    Examples:
+        response = get_request(url='https://api.example.com/users', params={'page': 1})
+        if response:
+            print(response['data'])
+    """
+    session = session or Session()
+    with session:
         response = _send_request(http_verb=http_verb, url=url, session=session, params=params, data=data, **kwargs)
-    else:
-        with Session() as session:
-            response = _send_request(http_verb=http_verb, url=url, session=session, params=params, data=data, **kwargs)
 
     # check if status code returned is "expected", otherwise raise ``HTTPError``
-    if response.status_code not in expected_status_codes(
-        http_verb, status_codes
-    ):
+    if response.status_code not in expected_status_codes(http_verb, status_codes):
         raise RequestError(
             f"Unexpected HTTP status code '{response.status_code}' returned with reason '{response.reason}'"
         )
 
-    # for responses with no content, return True to indicate
-    # that the request was successful
     if not response.content:
-        return True
+        return None
 
-    # Test if we did get a JSON response
-    if 'application/json' not in response.headers.get('Content-Type', ''):
-        raise RequestError(
-            f"The response was not valid JSON: '{response.text}'"
-        )
+    if "application/json" not in response.headers.get("Content-Type", ""):
+        raise RequestError(f"The response was not valid JSON: '{response.text}'")
 
     try:
         return response.json()
     except json.JSONDecodeError as e:
-        raise RequestError(
-            f"The response was not valid JSON: '{response.text}', error '{e}'"
-        ) from e
+        raise RequestError(f"The response was not valid JSON: '{response.text}', error '{e}'") from e
 
 
 # ------------------------------------------------------------------------
