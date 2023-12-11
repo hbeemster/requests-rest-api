@@ -1,7 +1,7 @@
 import pytest
 from requests import Session
 
-from requests_rest_api import delete_request, get_request, patch_request, post_request, put_request
+from requests_rest_api import delete_request, get_request, patch_request, post_request, put_request, RequestError
 
 
 # ------------------------------------------------------------------------
@@ -25,6 +25,11 @@ def test_get_request_without_session():
     result = get_request("https://reqres.in/api/users/2", status_codes=[200])
     assert result
 
+
+# ------------------------------------------------------------------------
+def test_get_request_without_json_response_():
+    with pytest.raises(RequestError, match="The response was not valid JSON"):
+        get_request("https://www.google.com/")
 
 # ------------------------------------------------------------------------
 # Tests for post_request()
