@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+# package under development
+requests-rest-api =         {path = ".", editable = true}
+
+
+[dev-packages]
+# ------------------------------------------------------------------------
+# Test packages
+# ------------------------------------------------------------------------
+coverage =                  {version = "==7.4.0"}
+pytest =                    {version = "==7.4.4"}
